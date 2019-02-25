@@ -1,0 +1,57 @@
+{
+  "name": "api",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "commit": "npm test && npm run lint",
+    "test": "NODE_ENV=testing jest --forceExit",
+    "start": "node_modules/kill-port/cli.js 4000 && NODE_ENV=development nodemon --exec babel-node ./server.js",
+    "st": "NODE_ENV=testing nodemon --exec babel-node ./server.js",
+    "lint": "eslint '**/*.js'",
+    "lint:fix": "eslint '**/*.js' --fix"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/test/integration/setup.js"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run commit",
+      "pre-push": "npm run commit"
+    }
+  },
+  "dependencies": {
+    "bcrypt": "^3.0.4",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "dotenv": "^6.2.0",
+    "express": "~4.16.0",
+    "http-errors": "~1.6.2",
+    "jade": "~1.11.0",
+    "mongoose": "^5.4.14",
+    "mongoose-keywords": "^0.4.0",
+    "morgan": "~1.9.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.3.3",
+    "@babel/node": "^7.2.2",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.3.1",
+    "babel-cli": "^6.26.0",
+    "elint": "^1.10.0",
+    "enzyme": "^3.9.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jest": "^22.3.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.12.4",
+    "jest": "^24.1.0",
+    "kill-port": "^1.3.2",
+    "mongodb": "^3.1.13",
+    "mongodb-memory-server": "^3.1.1",
+    "superagent": "^4.1.0",
+    "supertest": "^3.4.2"
+  }
+}
