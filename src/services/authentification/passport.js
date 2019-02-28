@@ -27,7 +27,6 @@ passport.use('facebook', new BearerStrategy(async (token, done) => {
 
     try {
         let user = await facebookService(token);
-        user = await User.createFromService(user);
         done(null, user);
         return null;
     } catch (error) {
