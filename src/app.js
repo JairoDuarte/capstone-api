@@ -1,7 +1,7 @@
 'use strict';
 
-/*eslint-disable-next-line*/
-import Env from '../config/env';
+import '../config/env';
+import './services/authentification/passport';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
@@ -19,7 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/', routes);
+app.use('/api/', routes);
 
 
 module.exports = app;

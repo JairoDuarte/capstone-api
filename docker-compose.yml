@@ -1,0 +1,23 @@
+version: '2.1'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NOD_ENV: development
+      PORT: 4001
+      TERM: xterm
+    ports:
+      - '4001:4001'
+    depends_on:
+      - database
+    volumes:
+      - .:/home/app/capstone_api
+      - /home/app/capstone_api/node_modules
+  database:
+    image: mongo:4.0.6
+    volumes:
+      - ../data:/data/db
+    ports:
+      - "27029:27017"

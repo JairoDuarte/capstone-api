@@ -31,7 +31,7 @@ const userSchema = new Schema({
   role: {
     type: String,
     enum: roles,
-    default: 'user'
+    default: 'custumer'
   },
   image: {
     type: String,
@@ -81,8 +81,8 @@ userSchema.methods = {
 }
 
 userSchema.statics = {
-
-  createFromService ({ service, id, email, name, image, role }) {
+  roles,
+  createFromService ({ service, id, email, name, image, role}) {
     return this.findOne({ $or: [{ [`services.${service}`]: id }, { email }] }).then((user) => {
       if (user) {
         user.services[service] = id;
@@ -92,7 +92,7 @@ userSchema.statics = {
         return user.save()
       } else {
         const password = email
-        return this.create({ services: { [service]: id }, email, password, name, picture, role })
+        return this.create({ services: { [service]: id }, email, password, name, image, role })
       }
     })
   }

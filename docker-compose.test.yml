@@ -1,0 +1,22 @@
+version: '2.1'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      NOD_ENV: test
+      TERM: xterm
+    command: npm run docker:test
+    ports:
+      - '4005:4005'
+    depends_on:
+      - database
+    volumes:
+      - .:/home/app/capstone_api
+  database:
+    image: mongo:4.0.6
+    volumes:
+      - ../data:/data/db
+    ports:
+      - "27030:27017"
