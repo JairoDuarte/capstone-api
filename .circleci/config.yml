@@ -6,7 +6,7 @@ jobs:
         - master
         - /feature-.*/
         - /circle-ci/
-        -/develop/
+        - /develop/
     docker:
       - image: circleci/node:10.15.1
       - image: circleci/mongo:4.0.6
