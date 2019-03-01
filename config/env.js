@@ -108,7 +108,7 @@ class Env {
    */
   getEnvPath () {
     if (!process.env.ENV_PATH || process.env.ENV_PATH.length === 0) {
-      return '.env.development'
+      return '.env.production'
     }
     return process.env.ENV_PATH
   }
