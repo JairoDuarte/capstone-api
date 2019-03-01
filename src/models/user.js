@@ -4,7 +4,7 @@ import bcrypt from 'bcrypt';
 import mongoose, { Schema } from 'mongoose';
 import mongooseKeywords from 'mongoose-keywords';
 
-const roles = ['custumer', 'robio'];
+const roles = ['custumer', 'coursier'];
 
 const userSchema = new Schema({
   email: {
