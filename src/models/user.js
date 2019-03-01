@@ -1,29 +1,18 @@
 'use strict';
 
-import bcrypt from 'bcrypt';
 import mongoose, { Schema } from 'mongoose';
 import mongooseKeywords from 'mongoose-keywords';
 
 const roles = ['custumer', 'coursier'];
+const status = ['actif', 'inactif'];
 
 const userSchema = new Schema({
   email: {
     type: String,
     match: /^\S+@\S+\.\S+$/,
-    required: true,
     unique: true,
     trim: true,
     lowercase: true
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 6
-  },
-  name: {
-    type: String,
-    index: true,
-    trim: true
   },
   services: {
     facebook: String
@@ -33,72 +22,74 @@ const userSchema = new Schema({
     enum: roles,
     default: 'custumer'
   },
-  image: {
+  status: {
     type: String,
-    trim: true
+    enum: status,
+    default: 'actif'
+  },
+  profile: {
+    firstname: String,
+    lastname: String,
+    image: {
+      type: String,
+      trim: true
+    },
+    birthday: Date
   }
 }, {
-  timestamps: true
-})
-
-userSchema.path('email').set(function (email) {
-
-  if (!this.name) {
-    this.name = email.replace(/^(.+)@.+$/, '$1');
-  }
-
-  return email;
-})
-
-userSchema.pre('save', function (next) {
-  if (!this.isModified('password')) return next();
-
-  const saltRounds = 10;
-
-  bcrypt.hash(this.password, saltRounds).then((hash) => {
-    this.password = hash;
-    next()
-  }).catch(next)
-})
+    timestamps: true
+  })
 
 userSchema.methods = {
-  view (full) {
-    let view = {};
-    let fields = ['id', 'name', 'image', 'email', 'role'];
+  view(role) {
 
-    if (full) {
-      fields = [...fields, 'createdAt'];
+    let view = {};
+    let fields = ['id', 'email', 'role'];
+
+    switch (role) {
+      case 'custumer':
+        fields = [...fields, 'profile'];
+        break;
+
+      case 'coursier':
+        fields = [...fields, 'profile', 'status'];
+        break;
+      
+      case 'admin':
+        fields = [...fields, 'profile', 'status', 'createdAt'];
+        break;
     }
 
     fields.forEach((field) => { view[field] = this[field] });
 
     return view;
-  },
-
-  authenticate (password) {
-    return bcrypt.compare(password, this.password).then((valid) => valid ? this : false);
   }
 }
 
 userSchema.statics = {
+  status,
   roles,
-  createFromService ({ service, id, email, name, image, role}) {
+  createFromService({ service, id, email, name, image, role }) {
     return this.findOne({ $or: [{ [`services.${service}`]: id }, { email }] }).then((user) => {
       if (user) {
         user.services[service] = id;
-        user.name = name;
-        user.image = image;
-        user.role = role;
+        if (role) user.role = role;
+            
+        //user.role = role;
         return user.save()
       } else {
-        const password = email
-        return this.create({ services: { [service]: id }, email, password, name, image, role })
+        const profile = { image: image };
+        name = name.split(' ');
+        profile.firstname = name[0] ? name[0] : '';
+        profile.lastname = name[1] ? name[1] : '';
+
+        return this.create({ services: { [service]: id }, email, profile, role })
       }
     })
   }
 }
 
-userSchema.plugin(mongooseKeywords, { paths: ['email', 'name'] });
+userSchema.plugin(mongooseKeywords, { paths: ['email'] });
 
 const User = mongoose.model('User', userSchema);
 
