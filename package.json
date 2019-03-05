@@ -6,7 +6,7 @@
     "docker:test": "npm i && npm test",
     "commit": "npm run lint",
     "test": "NODE_ENV=testing jest --forceExit",
-    "start": "node_modules/kill-port/cli.js 4000 && NODE_ENV=development nodemon --exec babel-node ./server.js",
+    "start": "node_modules/kill-port/cli.js 4000 && ENV_PATH=.env.development  NODE_ENV=development nodemon --exec babel-node ./server.js",
     "start:dev": "./node_modules/.bin/nodemon --exec babel-node ./server.js",
     "lint": "eslint '**/*.js'",
     "start:test": "NODE_ENV=testing babel-node ./test/integration/testsingle.js",
