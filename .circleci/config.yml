@@ -1,0 +1,34 @@
+version: 2
+jobs:
+  build:
+    branches:
+      only:
+        - master
+        - /feature-.*/
+        - /circle-ci/
+        - /develop/
+    docker:
+      - image: circleci/node:10.15.1
+      - image: circleci/mongo:4.0.6
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            - v1-dependencies-
+      
+      - run: sudo apt update 
+      - run: sudo apt -qqy install gdebi-core && cd / && sudo wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+      - run: cd / && sudo gdebi -n google-chrome-stable_current_amd64.deb
+      - run: npm install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+      - run: npm test

@@ -2,3 +2,6 @@ node_modules/
 .env.development
 .env.testing
 cmd.txt
+.vscode/
+.help/
+node_modules_/
