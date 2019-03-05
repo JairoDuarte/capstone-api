@@ -20,7 +20,8 @@ jobs:
           keys:
             - v1-dependencies-{{ checksum "package.json" }}
             - v1-dependencies-
-
+      
+      - run: apt update && apt -qqy install gdebi-core && wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb && gdebi -n google-chrome-stable_current_amd64.deb 
       - run: npm install
 
       - save_cache:
