@@ -4,33 +4,45 @@ import User from '../../../src/models/user';
 
 describe('Routes: Users', () => {
     const defaultId = '56cb91bdc3464f14678934ca';
-    const defaultCustumer = {
-        name: 'Jhon Doe',
-        email: 'jhon@mail.com',
-        password: '123password',
-        role: 'custumer'
+    const defaultcustomer = {
+        profile: {
+            email: 'doe@gmail.com',
+            firstname: 'Jhon',
+            lastname: 'Doe',
+            birthday: Date(),
+            image: ''
+        },
+        role: 'customer',
+        status: 'actif'
+
     };
-    const expectedCustumer = {
+    const expectedcustomer = {
         id: defaultId,
-        name: 'Jhon Doe',
-        email: 'jhon@mail.com',
-        role: 'custumer'
+        profile: {
+            email: 'doe@gmail.com',
+            firstname: 'Jhon',
+            lastname: 'Doe',
+            birthday: Date(),
+            image: ''
+        },
+        role: 'customer'
     };
 
     beforeEach(() => {
-        const user = new User(defaultCustumer);
+        const user = new User(defaultcustomer);
         user._id = defaultId;
-        return User.deleteOne({})
-            .then(() => user.save());
+        return user.save();
+        //return User.deleteOne({})
+          //  .then(() => user.save());
     });
 
-    afterEach(() => User.deleteMany({}));
+    afterEach(() => User.deleteMany({_id: defaultId}));
 
     describe('GET /users', () => {
         test('should return a list of users', async () => {
-            
+
             const response = await request.get('/api/users');
-            expect(response.body[0].email).toBe(expectedCustumer.email);
+            expect(response.body[0].role).toBe(expectedcustomer.role);
 
         });
     });
@@ -41,31 +53,60 @@ describe('Routes: Users', () => {
             const response = await request.get(`/api/users/${defaultId}`);
 
             expect(response.statusCode).toBe(200);
-            expect(response.body).toEqual(expectedCustumer);
+            expect(response.body.role).toEqual(expectedcustomer.role);
+        });
+    });
+
+
+    describe('Show Me /users/me required user authentification token', () => {
+        test('should return 200 with user information', async () => {
+            const response = await request
+                .get(`/api/users/me`)
+                .set('Authorization', `Bearer ${customer.token}`);
+
+            expect(response.statusCode).toBe(200);
+            expect(response.body.role).toEqual(customer.user.role);
+        });
+    });
+
+
+    describe('Update status of coursier /users/status required user authentification token', () => {
+        test('should return 200 with user information', async () => {
+
+            await request.put(`/api/users/${customer.user.id}`).send({role: 'coursier', status: 'actif'});
+
+            const response = await request
+                .get(`/api/users/status`)
+                .set('Authorization', `Bearer ${customer.token}`);
+            await request.put(`/api/users/${customer.user.id}`).send({role: 'customer'});
+
+            expect(response.statusCode).toBe(200);
+            expect(response.body.status).toEqual('inactif');
         });
     });
 
     describe('POST /users', () => {
         test('should return a new user with status code 201', async () => {
-            await User.deleteMany({});
+            await User.deleteOne({_id: defaultId});
             const customId = '56cb91bdc3464f14678934ba';
-            const newUser = Object.assign({}, { _id: customId }, defaultCustumer);
-            const expectedSaveCustumer = Object.assign({}, expectedCustumer, {id: customId});
+            const newUser = Object.assign({}, { _id: customId }, defaultcustomer);
+            const expectedSavecustomer = Object.assign({}, expectedcustomer, { id: customId });
 
             const response = await request.post('/api/users').send(newUser);
             expect(response.statusCode).toBe(201);
-            expect(response.body).toEqual(expectedSaveCustumer);
+            expect(response.body.role).toEqual(expectedSavecustomer.role);
+            await User.deleteOne({_id: customId});
         });
     });
 
     describe('PUT /users/:id', () => {
         test('should update the user and return 200 as status code', async () => {
-            const customUser = { name: 'Din Doe'};
-            const updatedUser = Object.assign({}, defaultCustumer, customUser);
+            const customUser = { firstname: 'Din', lastname: 'Doe' };
+            const updatedUser = Object.assign({}, defaultcustomer, customUser);
 
             const response = await request.put(`/api/users/${defaultId}`).send(updatedUser);
+
             expect(response.status).toBe(200);
-                   
         });
     });
 
@@ -74,7 +115,7 @@ describe('Routes: Users', () => {
 
             const response = await request.delete(`/api/users/${defaultId}`);
             expect(response.status).toBe(200);
-                   
+
         });
     });
-})
+});
