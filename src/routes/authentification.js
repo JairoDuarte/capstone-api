@@ -8,8 +8,11 @@ import { facebook } from '../services/authentification/passport';
 const router = express.Router();
 const authController = new AuthentificationController();
 
-router.post('/facebook',
-  facebook(), (req, res, next) =>
-  authController.login(req, res, next));
+
+router.get('/signup',
+  facebook());
+
+router.get('/signin',
+  facebook(), (req, res, next) => authController.login(req, res, next));
 
 export default router;

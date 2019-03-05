@@ -7,9 +7,8 @@ class AuthentificationController {
 
     async login ({user, body: { role } }, response, next) {
         try {
-            user.role = role;
-            console.log(user);
             
+            user.role = role;
             user = await User.createFromService(user);
             const token = await sign({id: user.id, email: user.email});
             return response.status(201).json({ token, user: user.view()});
