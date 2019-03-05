@@ -9,6 +9,7 @@
     "start": "node_modules/kill-port/cli.js 4000 && NODE_ENV=development nodemon --exec babel-node ./server.js",
     "start:dev": "./node_modules/.bin/nodemon --exec babel-node ./server.js",
     "lint": "eslint '**/*.js'",
+    "start:test": "NODE_ENV=testing babel-node ./test/integration/testsingle.js",
     "lint:fix": "eslint '**/*.js' --fix"
   },
   "jest": {
@@ -25,6 +26,7 @@
   },
   "dependencies": {
     "bcrypt": "^3.0.4",
+    "chromedriver": "^2.46.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "dotenv": "^6.2.0",
@@ -41,7 +43,8 @@
     "passport-http-bearer": "^1.0.1",
     "passport-jwt": "^4.0.0",
     "request": "^2.88.0",
-    "request-promise": "^4.2.4"
+    "request-promise": "^4.2.4",
+    "selenium-webdriver": "^4.0.0-alpha.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",

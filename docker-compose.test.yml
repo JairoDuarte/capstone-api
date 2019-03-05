@@ -3,10 +3,11 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: test.dockerfile
     environment:
       NOD_ENV: test
       TERM: xterm
+      DB_CONNECTION: mongodb://database/capstonetest
     command: npm run docker:test
     ports:
       - '4005:4005'

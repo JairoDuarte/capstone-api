@@ -3,7 +3,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     environment:
       NOD_ENV: development
       PORT: 4001
