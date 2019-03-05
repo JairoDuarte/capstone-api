@@ -17,7 +17,18 @@ class UsersController {
     return this.User.findById(user.id)
       .then(user => res.status(200).send(user.view(user.role)))
       .catch(err => res.status(400).send(err.message));
-      
+
+  }
+
+  updateStatus({ user }, res) {
+
+    return this.User.findById(user.id)
+      .then(user => {
+        user.status = user.status === this.User.status[0] ? this.User.status[1] : this.User.status[0];
+        return user.save();
+      })
+      .then(user => res.status(200).send(user.view(user.role)))
+      .catch(err => res.status(422).send(err.message));
   }
 
   getById(req, res) {
@@ -32,20 +43,14 @@ class UsersController {
 
     return user.save()
       .then(() => res.status(201).send(user.view()))
-      .catch(err => res.status(422).send(err.message));
+      .catch(err => {console.log(err); res.status(422).send(err.message)});
   }
 
   update(req, res) {
     const body = req.body;
     return this.User.findById(req.params.id)
       .then(user => {
-        user.name = body.name
-        user.email = body.email
-        user.role = body.role
-        if (body.password) {
-          user.password = body.password
-        }
-        return user.save();
+        return Object.assign(user, body).save()
       })
       .then(() => res.sendStatus(200))
       .catch(err => res.status(422).send(err.message));

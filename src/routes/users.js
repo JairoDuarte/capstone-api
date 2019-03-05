@@ -11,6 +11,7 @@ const usersController = new UsersController(User);
 
 router.get('/', (req, res) => usersController.get(req, res));
 router.get('/me', authorize(),(req, res) => usersController.showMe(req, res));
+router.get('/status', authorize({roles: ['coursier']}),(req, res) => usersController.updateStatus(req, res));
 router.get('/:id', (req, res) => usersController.getById(req, res));
 router.post('/', (req, res) => usersController.create(req, res));
 router.put('/:id', (req, res) => usersController.update(req, res));

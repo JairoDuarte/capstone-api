@@ -1,26 +1,18 @@
 'use strict';
 
 import mongoose, { Schema } from 'mongoose';
-import mongooseKeywords from 'mongoose-keywords';
 
-const roles = ['custumer', 'coursier'];
+const roles = ['customer', 'coursier'];
 const status = ['actif', 'inactif'];
 
 const userSchema = new Schema({
-  email: {
-    type: String,
-    match: /^\S+@\S+\.\S+$/,
-    unique: true,
-    trim: true,
-    lowercase: true
-  },
   services: {
     facebook: String
   },
   role: {
     type: String,
     enum: roles,
-    default: 'custumer'
+    default: 'customer'
   },
   status: {
     type: String,
@@ -34,6 +26,12 @@ const userSchema = new Schema({
       type: String,
       trim: true
     },
+    email: {
+      type: String,
+      match: /^\S+@\S+\.\S+$/,
+      trim: true,
+      lowercase: true
+    },
     birthday: Date
   }
 }, {
@@ -44,10 +42,10 @@ userSchema.methods = {
   view(role) {
 
     let view = {};
-    let fields = ['id', 'email', 'role'];
+    let fields = ['id', 'role'];
 
     switch (role) {
-      case 'custumer':
+      case 'customer':
         fields = [...fields, 'profile'];
         break;
 
@@ -69,27 +67,24 @@ userSchema.methods = {
 userSchema.statics = {
   status,
   roles,
-  createFromService({ service, id, email, name, image, role }) {
+  createFromService({ service, id, email, name, image }) {
     return this.findOne({ $or: [{ [`services.${service}`]: id }, { email }] }).then((user) => {
       if (user) {
-        user.services[service] = id;
-        if (role) user.role = role;
-            
-        //user.role = role;
+        
         return user.save()
       } else {
-        const profile = { image: image };
+        const profile = {};
+        profile.email = email;
+        profile.image = image;
         name = name.split(' ');
         profile.firstname = name[0] ? name[0] : '';
         profile.lastname = name[1] ? name[1] : '';
 
-        return this.create({ services: { [service]: id }, email, profile, role })
+        return this.create({ services: { [service]: id }, profile})
       }
     })
   }
 }
-
-userSchema.plugin(mongooseKeywords, { paths: ['email'] });
 
 const User = mongoose.model('User', userSchema);
 
