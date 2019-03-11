@@ -33,7 +33,8 @@ const userSchema = new Schema({
       lowercase: true
     },
     birthday: Date
-  }
+  },
+  skheras: [{ type: Schema.Types.ObjectId, ref: 'Skhera' }]
 }, {
     timestamps: true
   })
