@@ -50,10 +50,16 @@ class UsersController {
     const body = req.body;
     return this.User.findById(req.params.id)
       .then(user => {
-        return Object.assign(user, body).save()
+        let {profile: {fullname, phone, email}} = body;
+        
+        user.profile.fullname = fullname ? fullname : user.profile.fullname;
+        user.profile.phone = phone ? phone : user.profile.phone;
+        user.profile.email = email ? email : user.profile.email;
+
+        return user.save()
       })
       .then(() => res.sendStatus(200))
-      .catch(err => res.status(422).send(err.message));
+      .catch(err => {console.log(err); res.status(422).send(err.message)});
   }
 
   remove(req, res) {

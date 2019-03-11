@@ -23,7 +23,10 @@ export const authorize = ({ required, roles = User.roles } = {}) => (req, res, n
             next();
         });
     })(req, res, next);
-        
+
+passport.serializeUser((user, cb) => cb(null, user))
+passport.deserializeUser((obj, cb) => cb(null, obj))  
+      
 /*eslint-disable*/
 passport.use('token', new JwtStrategy({
     secretOrKey: process.env.JWT_SECRET,

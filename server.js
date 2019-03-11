@@ -2,6 +2,7 @@
 
 import http from 'http';
 import debug from 'debug';
+import socketio from 'socket.io'
 import app from './src/app';
 
 debug('testexp:server');
@@ -11,12 +12,21 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
-server.listen(port, ()=>{
-  console.log(`app running on http://localhost:${server.address().port}`);
-})
 
 server.on('error', onError);
 server.on('listening', onListening);
+const io = socketio.listen(server)
+
+app.set('io', io)
+io.origins('*:*')
+io.set('origins', '*:*');
+
+
+
+
+server.listen(port, ()=>{
+  console.log(`app running on http://localhost:${server.address().port}`);
+})
 
 function onError(error) {
   if (error.syscall !== 'listen') {

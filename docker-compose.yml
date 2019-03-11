@@ -15,7 +15,6 @@ services:
       - database
     volumes:
       - .:/home/app/capstone_api
-      - /home/app/capstone_api/node_modules
   database:
     image: mongo:4.0.6
     volumes:

@@ -14,4 +14,5 @@ router.get('/', (req, res) => {
     res.status(200).send('Welcome to Capstone API!')
 })
 
+
 export default router;

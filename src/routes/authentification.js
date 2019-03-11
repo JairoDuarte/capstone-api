@@ -9,10 +9,19 @@ const router = express.Router();
 const authController = new AuthentificationController();
 
 
+
+router.get('/signin',
+  facebook(), (req, res, next) => {console.log(req.params); authController.login(req, res, next)});
+
+router.use((req, res, next) => {
+  
+  req.session.socketId = req.query.socketId
+  req.session.role = req.query.role
+  next()
+})
+
 router.get('/signup',
   facebook());
 
-router.get('/signin',
-  facebook(), (req, res, next) => authController.login(req, res, next));
 
 export default router;

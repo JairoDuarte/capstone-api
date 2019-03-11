@@ -20,8 +20,8 @@ const userSchema = new Schema({
     default: 'actif'
   },
   profile: {
-    firstname: String,
-    lastname: String,
+    fullname: String,
+    phone: String,
     image: {
       type: String,
       trim: true
@@ -76,10 +76,7 @@ userSchema.statics = {
         const profile = {};
         profile.email = email;
         profile.image = image;
-        name = name.split(' ');
-        profile.firstname = name[0] ? name[0] : '';
-        profile.lastname = name[1] ? name[1] : '';
-
+        profile.fullname = name;
         return this.create({ services: { [service]: id }, profile})
       }
     })

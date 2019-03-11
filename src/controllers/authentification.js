@@ -5,13 +5,16 @@ import User from '../models/user';
 
 class AuthentificationController {
 
-    async login ({user, body: { role } }, response, next) {
+    async login ({session, app, user }, response, next) {
         try {
-            
-            user.role = role;
+            const io = app.get('io')
+            user.role = session.role;
             user = await User.createFromService(user);
             const token = await sign({id: user.id, email: user.email});
-            return response.status(201).json({ token, user: user.view()});
+            console.log(session.socketId, session.role);
+            io.in(session.socketId).emit('facebook', {user: user.view(user.role), token: token})
+            response.end()
+            //return response.redirect('http://localhost:3000/signin')  //response.status(201).json({ token, user: user.view()});
         } catch (error) {
             next(error)
         }
