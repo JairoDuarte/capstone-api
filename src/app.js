@@ -6,14 +6,21 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import session from 'express-session';
-import cors from 'cors'
+import cors from 'cors';
+import RedisSessions from 'redis-sessions';
 import routes from './routes';
 import mongoose from '../config/database';
 
 mongoose.connect(process.env.DB_CONNECTION)
 mongoose.Promise = Promise
 
-var app = express();
+const redis = new RedisSessions();
+const app = express();
+
+app.set('redis', redis);
+redis.ping(function(err, resp) {
+    console.log('Redis Cache connected', resp);  
+}); 
 
 app.use(cors({
     origin: 'http://localhost:3000'
