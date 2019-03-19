@@ -5,14 +5,14 @@ import { Strategy as FBStrategy } from 'passport-facebook';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import facebookService from './facebook';
 
-import User from '../../models/user';
+import User, {COURSIER_ROLE, CUSTOMER_ROLE} from '../../models/user';
 
 export const facebook = () => passport.authenticate('facebook', { session: false });
 export const facebookCollback = () => passport.authenticate('facebook', { session: false});
 
 export const login = () => passport.authenticate('token', { session: false });
 
-export const authorize = ({ required, roles = User.roles } = {}) => (req, res, next) =>
+export const authorize = ({ required, roles = [COURSIER_ROLE, CUSTOMER_ROLE] } = {}) => (req, res, next) =>
     passport.authenticate('token', { session: false }, (err, user) => {
        
         if (!user || err || (required && !user) || (required && !~roles.indexOf(user.role))) {

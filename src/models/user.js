@@ -2,8 +2,10 @@
 
 import mongoose, { Schema } from 'mongoose';
 
-const roles = ['customer', 'coursier'];
-const status = ['actif', 'inactif'];
+export const STATUS_ACTIF = 'actif';
+export const STATUS_INACTIF = 'inactif';
+export const CUSTOMER_ROLE = 'consumer';
+export const COURSIER_ROLE = 'rider';
 
 const userSchema = new Schema({
   services: {
@@ -11,13 +13,24 @@ const userSchema = new Schema({
   },
   role: {
     type: String,
-    enum: roles,
-    default: 'customer'
+    enum: [CUSTOMER_ROLE, COURSIER_ROLE],
+    default: CUSTOMER_ROLE
+  },
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point'
+    },
+    coordinates: {
+      type: [Number],
+      default: [34.02590720000001,-6.836439899999959]
+    }
   },
   status: {
     type: String,
-    enum: status,
-    default: 'actif'
+    enum: [STATUS_ACTIF, STATUS_INACTIF],
+    default: STATUS_ACTIF
   },
   profile: {
     fullname: String,
@@ -46,11 +59,11 @@ userSchema.methods = {
     let fields = ['id', 'role'];
 
     switch (role) {
-      case 'customer':
+      case CUSTOMER_ROLE:
         fields = [...fields, 'profile'];
         break;
 
-      case 'coursier':
+      case COURSIER_ROLE:
         fields = [...fields, 'profile', 'status'];
         break;
       
@@ -66,10 +79,9 @@ userSchema.methods = {
 }
 
 userSchema.statics = {
-  status,
-  roles,
-  createFromService({ service, id, email, name, image }) {
-    return this.findOne({ $or: [{ [`services.${service}`]: id }, { email }] }).then((user) => {
+  createFromService({ service, id, email, name, image, role }) {
+    return this.findOne({ $or: [{ [`services.${service}`]: id }] }).then((user) => {
+      
       if (user) {
         
         return user.save()
@@ -78,11 +90,39 @@ userSchema.statics = {
         profile.email = email;
         profile.image = image;
         profile.fullname = name;
-        return this.create({ services: { [service]: id }, profile})
+        return this.create({ services: { [service]: id }, profile, role})
       }
     })
+  },
+  async updateLocation(long, latt, id){
+    return this.findById(id).then((user) => {
+      if (user) {
+        user.location.coordinates = [long, latt];
+        return user.save()
+      }
+      return null; 
+    })
+  },
+  async getCoursierByLocation(long, latt){
+    try {
+        const robios = await this.aggregate().near(
+        { 
+            near:[parseFloat(long), parseFloat(latt)], 
+            distanceField: "dist.calculated", 
+            includeLocs: "dist.location",
+            spherical:true,
+            query: {role: COURSIER_ROLE, status: STATUS_ACTIF},
+            num: 10
+        })
+
+        return robios;
+    } catch (error) {
+      return error
+    }   
   }
 }
+
+userSchema.index({ location: "2dsphere" });
 
 const User = mongoose.model('User', userSchema);
 
