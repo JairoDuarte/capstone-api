@@ -25,6 +25,7 @@
     }
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "bcrypt": "^3.0.4",
     "chromedriver": "^2.46.0",
     "cookie-parser": "~1.4.3",
@@ -44,6 +45,7 @@
     "passport-facebook-token": "^3.3.0",
     "passport-http-bearer": "^1.0.1",
     "passport-jwt": "^4.0.0",
+    "redis-sessions": "^2.1.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "selenium-webdriver": "^4.0.0-alpha.1",
