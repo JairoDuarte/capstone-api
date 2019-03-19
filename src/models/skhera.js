@@ -3,38 +3,48 @@
 import mongoose, { Schema } from 'mongoose';
 import mongooseKeywords from 'mongoose-keywords'
 
-const status = ['picked', 'delivered'];
+export const STATUS_PICKED = 'picked';
+export const STATUS_DELIVERED = 'delivered';
 
 const skheraSchema = new Schema({
     description: {
         type: String,
     },
     deliver: {
-        type: String
+        type: {
+            type: String
+        },
+        duration: Number
     },
     author: { type: Schema.Types.ObjectId, ref: 'User' },
     rider: { type: Schema.Types.ObjectId, ref: 'User' },
-    price: {
+    priceitems: {
         from: Number,
         to: Number
     },
+    price: {
+        type: Number,
+        required: true
+    },
     schedule: {
-        type: Date
+        type: String
     },
     items: [String],
     from: {
-        lat: String,
-        long: String,
-        text: String
+        text: String,
+        coordinates: {
+            type: [Number]
+        }
     },
     to: {
-        lat: String,
-        long: String,
+        coordinates: {
+            type: [Number]
+        },
         text: String
     },
     status: {
         type: String,
-        enum: status,
+        enum: [STATUS_DELIVERED, STATUS_PICKED],
         default: 'picked'
     }
 }, {
@@ -50,15 +60,15 @@ skheraSchema.methods = {
   
       switch (role) {
         case 'customer':
-          fields = [...fields, 'profile'];
+          fields = [...fields];
           break;
   
         case 'coursier':
-          fields = [...fields, 'profile', 'status'];
+          fields = [...fields];
           break;
         
         case 'admin':
-          fields = [...fields, 'profile', 'status', 'createdAt'];
+          fields = [...fields, 'createdAt'];
           break;
       }
   

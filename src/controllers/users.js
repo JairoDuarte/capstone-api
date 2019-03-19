@@ -1,4 +1,6 @@
 'use strict';
+import Skhera from '../models/skhera';
+import {getOptimezedRoutes} from "../services/optimizedRoute";
 
 class UsersController {
 
@@ -18,6 +20,29 @@ class UsersController {
       .then(user => res.status(200).send(user.view(user.role)))
       .catch(err => res.status(400).send(err.message));
 
+  }
+
+  async getRoutes({user}, res){
+    try{
+      const user_ = await this.User.findById(user.id);
+      console.log(user_);
+      const skhera = await Skhera.find({rider: "5c8b88353600cf2ee9e74099"});
+      console.log(skhera.length);
+      let routes = skhera.map(item => {
+        return {lat: item.from.coordinates[1], lng: item.from.coordinates[0], id: item.from.text};
+      })
+      skhera.map(item => {
+        routes.push({lat: item.to.coordinates[0], lng: item.from.coordinates[1], id: item.to.text});
+      })
+      console.log(routes);
+
+      const optimezedRoutes = await getOptimezedRoutes(routes, user_.location.coordinates); //getOptimezedRoutes(routes);
+      return res.status(200).send(optimezedRoutes);
+    }catch(error ){
+      console.log(error);
+      return res.status(500).send(error);
+      
+    }
   }
 
   updateStatus({ user }, res) {
