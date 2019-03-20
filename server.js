@@ -1,8 +1,10 @@
 'use strict';
 
 import http from 'http';
+import socketio from 'socket.io';
 import debug from 'debug';
 import app from './src/app';
+
 
 debug('testexp:server');
 
@@ -17,6 +19,11 @@ server.listen(port, ()=>{
 
 server.on('error', onError);
 server.on('listening', onListening);
+
+const io = socketio.listen(server);
+app.set('io', io);
+io.origins('*:*');
+io.set('origins', '*:*');
 
 function onError(error) {
   if (error.syscall !== 'listen') {
