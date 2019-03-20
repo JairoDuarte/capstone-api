@@ -10,14 +10,11 @@ class Env {
   constructor () {
     if (process.env.NODE_ENV !== 'production') {
         const bootedAsTesting = process.env.NODE_ENV === 'testing'
-        const env = this.load(this.getEnvPath(), false)
+        this.load(this.getEnvPath(), false)
         /**
          * Throwing the exception when ENV_SILENT is not set to true
          * and ofcourse there is an error
          */
-        if (env.error && process.env.ENV_SILENT !== 'true') {
-        throw env.error
-        }
 
         /**
          * Load the `.env.testing` file if app was booted
@@ -72,6 +69,7 @@ class Env {
    * @return {Object}
    */
   load (filePath, overwrite = true, encoding = 'utf8') {
+    if (filePath === null) return null;
     const options = {
       path: path.isAbsolute(filePath) ? filePath : path.join(__dirname, `../${filePath}`),
       encoding
@@ -108,9 +106,9 @@ class Env {
    */
   getEnvPath () {
     if (!process.env.ENV_PATH || process.env.ENV_PATH.length === 0) {
-      return '.env.development'
+      return null;
     }
-    return process.env.ENV_PATH
+    return process.env.ENV_PATH;
   }
 
   /**
