@@ -53,19 +53,19 @@ userSchema.methods = {
   view(role) {
 
     let view = {};
-    let fields = ['id', 'role'];
+    let fields = ['id', 'role','email', 'image', 'phone', 'fullname'];
 
     switch (role) {
       case CUSTOMER_ROLE:
-        fields = [...fields, 'profile'];
+        fields = [...fields];
         break;
 
       case COURSIER_ROLE:
-        fields = [...fields, 'profile', 'status'];
+        fields = [...fields, 'status'];
         break;
       
       case 'admin':
-        fields = [...fields, 'profile', 'status', 'createdAt'];
+        fields = [...fields, 'status', 'createdAt'];
         break;
     }
 
