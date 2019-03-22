@@ -4,7 +4,7 @@ import http from 'http';
 import socketio from 'socket.io';
 import debug from 'debug';
 import app from './src/app';
-
+import User from './src/models/user';
 
 debug('testexp:server');
 
@@ -24,6 +24,13 @@ const io = socketio.listen(server);
 app.set('io', io);
 io.origins('*:*');
 io.set('origins', '*:*');
+io.on('connection', function (socket) {
+
+  socket.on('location', function (data) {
+    User.updateLocation(data.location.longitude, data.location.latitude, data.id);
+  });
+
+});
 
 function onError(error) {
   if (error.syscall !== 'listen') {
