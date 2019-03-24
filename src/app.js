@@ -6,9 +6,9 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import session from 'express-session';
 import cors from 'cors';
+import { errorHandler } from 'bodymen';
 import mongoose from '../config/database';
 import routes from './routes';
-import { errorHandler } from 'bodymen';
 
 mongoose.connect(process.env.DB_CONNECTION);
 mongoose.Promise = Promise;
