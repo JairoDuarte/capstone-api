@@ -1,7 +1,7 @@
 'use strict';
 import Skhera from '../models/skhera';
 
-export const getByUser = async ({params: { id }}, res) => {
+export const getByUser = async ({ user: { id }}, res) => {
   try {
     const skheras = await Skhera.find({author: id });
     return res.status(200).send(skheras);
