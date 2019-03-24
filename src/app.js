@@ -8,6 +8,7 @@ import session from 'express-session';
 import cors from 'cors';
 import mongoose from '../config/database';
 import routes from './routes';
+import { errorHandler } from 'bodymen';
 
 mongoose.connect(process.env.DB_CONNECTION);
 mongoose.Promise = Promise;
@@ -34,5 +35,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use('/api', routes);
+app.use(errorHandler());
 
 module.exports = app;
