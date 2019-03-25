@@ -1,5 +1,7 @@
 'use strict';
 import Skhera, { STATUS_NOTRECIEVED } from '../models/skhera';
+import Skhera from '../models/skhera';
+import {getCoursier, getAnotherCoursier, sendSkheraRequest, sendSkheraNotificationConsumer} from '../services/skhera';
 
 export const getByUser = async ({ user: { id }}, res) => {
   try {
@@ -52,7 +54,7 @@ export const getEstimatedPrice = async  ({ body: {distance, to, deliver}}, res) 
   return res.status(200).send({price: `${price}DH`});
 }
 
-export const create = async ({body, user}, res) => {
+export const create = async ({body, user, app}, res) => {
   let skhera = new Skhera(body);
   skhera.to = {};
   skhera.from = {};
@@ -63,6 +65,10 @@ export const create = async ({body, user}, res) => {
   skhera.to.coordinates = [body.to.coordinates[1], body.to.coordinates[0]];
   skhera.from.coordinates = [body.from.coordinates[1], body.from.coordinates[0]];
   skhera.author = user.id;
+  let coursier = await getCoursier(skhera.from.coordinates, skhera._id);
+  skhera.rider = coursier._id;
+  sendSkheraRequest(app, skhera, coursier);
+  
   try {
     await skhera.save();
     return res.status(201).send(skhera.view());
@@ -77,5 +83,28 @@ export const remove = async (req, res) => {
     return res.status(200).send();
   } catch (error) {
     return res.status(400).send(error.message)
+  }
+}
+
+export const accept = async ({body: {status, idSkhera}, app }, response) => {
+    
+  try {
+    let skhera = await Skhera.findById(idSkhera);
+    
+    if (!status) {
+      let coursier = await getAnotherCoursier(skhera.from.coordinates, idSkhera);
+      skhera.rider = coursier._id;
+      await skhera.save();
+      sendSkheraRequest(app, skhera, coursier);
+      return response.status(200).send('done');
+    }
+    else{
+      sendSkheraNotificationConsumer(app, skhera)
+      return response.status(200).send();
+    }
+  
+  } catch (error) {
+      console.error(error);
+      return response.status(500).send(error.message);
   }
 }

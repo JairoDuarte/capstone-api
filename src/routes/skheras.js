@@ -2,9 +2,9 @@
 
 import express from 'express';
 import { middleware as body } from 'bodymen'
-import {getById, getByUser, getEstimatedPrice, create, remove} from '../controllers/skheras';
+import {getById, getByUser, getEstimatedPrice, create, remove, accept} from '../controllers/skheras';
 import { authorize } from '../services/authentification/passport';
-import { CUSTOMER_ROLE} from '../models/user';
+import { CUSTOMER_ROLE, COURSIER_ROLE} from '../models/user';
 import { schema } from '../models/skhera';        
 
 const  {description, deliver, to, from, price, schedule, items, priceitems} = schema.tree;
@@ -30,6 +30,6 @@ router.post('/price', body({
         type: Number,
         required: true
     }}), authorize({roles: [CUSTOMER_ROLE]}),(req, res) => getEstimatedPrice(req, res));
-
+router.post('/accept',authorize({roles: [COURSIER_ROLE]}),(req, res) => accept(req, res));
 
 export default router;
