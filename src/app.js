@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import session from 'express-session';
 import cors from 'cors';
+import { errorHandler } from 'bodymen';
 import mongoose from '../config/database';
 import routes from './routes';
 
@@ -34,5 +35,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use('/api', routes);
+app.use(errorHandler());
 
 module.exports = app;
