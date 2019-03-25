@@ -1,11 +1,12 @@
 'use strict';
 
 import mongoose, { Schema } from 'mongoose';
-import mongooseKeywords from 'mongoose-keywords'
+import mongooseKeywords from 'mongoose-keywords';
 
 export const STATUS_PICKED = 'picked';
 export const STATUS_DELIVERED = 'delivered';
-
+export const STATUS_RECIEVED = 'recieved';
+export const STATUS_NOTRECIEVED = 'not recieved';
 const skheraSchema = new Schema({
     description: {
         type: String,
@@ -19,6 +20,10 @@ const skheraSchema = new Schema({
     priceitems: {
         from: Number,
         to: Number
+    },
+    isshared: {
+        type: Boolean,
+        default: false
     },
     price: {
         type: Number,
@@ -42,8 +47,8 @@ const skheraSchema = new Schema({
     },
     status: {
         type: String,
-        enum: [STATUS_DELIVERED, STATUS_PICKED],
-        default: 'picked'
+        enum: [STATUS_DELIVERED, STATUS_PICKED, STATUS_RECIEVED, STATUS_NOTRECIEVED],
+        default: STATUS_NOTRECIEVED
     }
 }, {
         timestamps: true

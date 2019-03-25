@@ -1,9 +1,9 @@
 'use strict';
-import Skhera from '../models/skhera';
+import Skhera, { STATUS_NOTRECIEVED } from '../models/skhera';
 
 export const getByUser = async ({ user: { id }}, res) => {
   try {
-    const skheras = await Skhera.find({author: id });
+    const skheras = await Skhera.find({author: id, status: {$ne: STATUS_NOTRECIEVED} }).populate('rider');
     return res.status(200).send(skheras);
   } catch (error) {
     return res.status(500).send(error.message)
