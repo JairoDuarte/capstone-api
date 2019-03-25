@@ -16,12 +16,12 @@ export const showMe = async ({ user: { id } }, res) => {
 
 }
 
-export const updateStatus = async ({ user: { id }, status }, res) => {
+export const updateStatus = async ({ user: { id }, body: { status } }, res) => {
 
   try {
     let user = await User.findById(id);
     notFound(res, user);
-    
+    console.log(status);
     user.status = status;
     await user.save();
     success(res, user);
