@@ -1,4 +1,4 @@
-export const success = (res, entity, status) => {
+export const success = (res, entity = true, status) => {
     if (entity) {
       return res.status(status || 200).json(entity);
     }

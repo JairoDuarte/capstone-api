@@ -2,21 +2,21 @@
 import User from '../models/user';
 import {notFound, success} from '../services/response';
 
-export const showMe = async ({ user: { id } }, res) => {
+export const showMe = async ({ user: { id, role } }, res) => {
   
   try {
     
     let user = await User.findById(id);
     notFound(res, user);
-    success(res, user)
+    success(res, user.view(role));
 
   } catch (error) {
-    return res.status(500).send(error.message);
+    return res.status(400).send(error.message);
   }
 
 }
 
-export const updateStatus = async ({ user: { id }, body: { status } }, res) => {
+export const updateStatus = async ({ user: { id, role }, body: { status } }, res) => {
 
   try {
     let user = await User.findById(id);
@@ -24,51 +24,50 @@ export const updateStatus = async ({ user: { id }, body: { status } }, res) => {
     console.log(status);
     user.status = status;
     await user.save();
-    success(res, user);
+    success(res, user.view(role));
 
-  } catch (error) {
-    return res.status(500).send(error.message);
-  }
-}
-
-export const getById = async (req, res) => {
-  
-  try {
-
-    let user = await User.findById(req.params.id);
-    notFound(res, user);
-    
-    success(res, user);
   } catch (error) {
     return res.status(400).send(error.message);
   }
 }
 
-export const update = async (req, res) => {
-  
-  const body = req.body;
+export const getById = async ({params: { id }, user: { role }}, res) => {
   
   try {
-    let user =  await User.findById(req.params.id);
-    notFound(user);
 
-    let {fullname, phone, email} = body;  
+    let user = await User.findById(id);
+    notFound(res, user);
+    
+    success(res, user.view(role));
+  } catch (error) {
+    return res.status(400).send(error.message);
+  }
+}
+
+export const update = async ({body: { fullname, phone, email }, params: { id }}, res) => {
+  
+  
+  try {
+    let user =  await User.findById(id);
+    notFound(res, user);
+
     user.fullname = fullname ? fullname : user.profile.fullname;
     user.phone = phone ? phone : user.profile.phone;
     user.email = email ? email : user.profile.email;
     await user.save();
-    success(res, 200);
+    success(res);
 
   } catch (error) {
-    return res.status(500).send(error.message);
+    console.log(error);
+    return res.status(400).send(error.message);
   }
 }
 
 export const remove = async (req, res) => {
   try {
     await User.deleteOne({ _id: req.params.id });
-    return res.status(200).send();
+    success(res);
   } catch (error) {
-    res.status(400).send(error.message)
+    res.status(400).send(error.message);
   }
 }
