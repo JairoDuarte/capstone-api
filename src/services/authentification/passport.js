@@ -1,7 +1,7 @@
 'use strict'
 
+import FacebookTokenStrategy from 'passport-facebook-token';
 import passport from 'passport';
-import { Strategy as FBStrategy } from 'passport-facebook';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import facebookService from './facebook';
 
@@ -47,13 +47,15 @@ passport.use('token', new JwtStrategy({
     }).catch(done);
 }));
 
-passport.use('facebook', new FBStrategy({
+passport.use('facebook', new FacebookTokenStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
-    callbackURL: '/api/auth/signin'
-  },
-  async function(accessToken, refreshToken, {}, done) {
+},
+async function (accessToken, refreshToken, profile, done) {
+    
+    console.log(profile);
     const user  = await facebookService(accessToken);
-   
+    //TODO: Utiliser profile pour récupérer les données au lieu de facebookservice
+    
     return done(null, user);
 }));
