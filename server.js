@@ -13,9 +13,9 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
-server.listen(port, ()=>{
+server.listen(port, () => {
   console.log(`app running on http://localhost:${server.address().port}`);
-})
+});
 
 server.on('error', onError);
 server.on('listening', onListening);
@@ -24,12 +24,10 @@ const io = socketio.listen(server);
 app.set('io', io);
 io.origins('*:*');
 io.set('origins', '*:*');
-io.on('connection', function (socket) {
-
-  socket.on('location', function (data) {
+io.on('connection', function(socket) {
+  socket.on('location', function(data) {
     User.updateLocation(data.location.longitude, data.location.latitude, data.id);
   });
-
 });
 
 function onError(error) {
@@ -55,8 +53,6 @@ function onError(error) {
 
 function onListening() {
   var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
+  var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }

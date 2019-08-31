@@ -10,8 +10,11 @@ import { errorHandler } from 'bodymen';
 import mongoose from '../config/database';
 import routes from './routes';
 
-mongoose.connect(process.env.DB_CONNECTION);
-mongoose.Promise = Promise;
+mongoose.connect(process.env.DB_CONNECTION, {
+  reconnectTries: Number.MAX_VALUE,
+  socketTimeoutMS: 0,
+  keepAlive: true
+});
 
 const app = express();
 
