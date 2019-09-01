@@ -1,28 +1,28 @@
-'use strict'
+'use strict';
 
 /*eslint-disable-next-line*/
 import _ from 'lodash';
-import path  from 'path';
+import path from 'path';
 import dotenv from 'dotenv';
 import fs from 'fs';
 
 class Env {
-  constructor () {
+  constructor() {
     if (process.env.NODE_ENV !== 'production') {
-        const bootedAsTesting = process.env.NODE_ENV === 'testing'
-        this.load(this.getEnvPath(), false)
-        /**
-         * Throwing the exception when ENV_SILENT is not set to true
-         * and ofcourse there is an error
-         */
+      const bootedAsTesting = process.env.NODE_ENV === 'testing';
+      this.load(this.getEnvPath(), false);
+      /**
+       * Throwing the exception when ENV_SILENT is not set to true
+       * and ofcourse there is an error
+       */
 
-        /**
-         * Load the `.env.testing` file if app was booted
-         * under testing mode
-         */
-        if (bootedAsTesting) {
-        this.load('.env.testing')
-        }
+      /**
+       * Load the `.env.testing` file if app was booted
+       * under testing mode
+       */
+      if (bootedAsTesting) {
+        this.load('.env.testing');
+      }
     }
   }
 
@@ -38,23 +38,23 @@ class Env {
    *
    * @private
    */
-  _interpolate (env, envConfig) {
-    const matches = env.match(/(\\)?\$([a-zA-Z0-9_]+)|(\\)?\${([a-zA-Z0-9_]+)}/g) || []
-    _.each(matches, (match) => {
+  _interpolate(env, envConfig) {
+    const matches = env.match(/(\\)?\$([a-zA-Z0-9_]+)|(\\)?\${([a-zA-Z0-9_]+)}/g) || [];
+    _.each(matches, match => {
       /**
        * Variable is escaped
        */
       if (match.indexOf('\\') === 0) {
-        env = env.replace(match, match.replace(/^\\\$/, '$'))
-        return
+        env = env.replace(match, match.replace(/^\\\$/, '$'));
+        return;
       }
 
-      const key = match.replace(/\$|{|}/g, '')
-      const variable = envConfig[key] || process.env[key] || ''
-      env = env.replace(match, this._interpolate(variable, envConfig))
-    })
+      const key = match.replace(/\$|{|}/g, '');
+      const variable = envConfig[key] || process.env[key] || '';
+      env = env.replace(match, this._interpolate(variable, envConfig));
+    });
 
-    return env
+    return env;
   }
 
   /**
@@ -68,15 +68,15 @@ class Env {
    *
    * @return {Object}
    */
-  load (filePath, overwrite = true, encoding = 'utf8') {
+  load(filePath, overwrite = true, encoding = 'utf8') {
     if (filePath === null) return null;
     const options = {
       path: path.isAbsolute(filePath) ? filePath : path.join(__dirname, `../${filePath}`),
       encoding
-    }
+    };
 
     try {
-      const envConfig = dotenv.parse(fs.readFileSync(options.path, options.encoding))
+      const envConfig = dotenv.parse(fs.readFileSync(options.path, options.encoding));
 
       /**
        * Dotenv doesn't overwrite existing env variables, so we
@@ -87,12 +87,12 @@ class Env {
        */
       _.each(envConfig, (value, key) => {
         if (process.env[key] === undefined || overwrite) {
-          process.env[key] = this._interpolate(value, envConfig)
+          process.env[key] = this._interpolate(value, envConfig);
         }
-      })
-      return { parsed: envConfig }
+      });
+      return { parsed: envConfig };
     } catch (error) {
-      return { error }
+      return { error };
     }
   }
 
@@ -104,7 +104,7 @@ class Env {
    *
    * @return {String}
    */
-  getEnvPath () {
+  getEnvPath() {
     if (!process.env.ENV_PATH || process.env.ENV_PATH.length === 0) {
       return null;
     }
@@ -127,8 +127,8 @@ class Env {
    * Env.get('CACHE_VIEWS', false)
    * ```
    */
-  get (key, defaultValue = null) {
-    return _.get(process.env, key, defaultValue)
+  get(key, defaultValue = null) {
+    return _.get(process.env, key, defaultValue);
   }
 
   /**
@@ -147,9 +147,9 @@ class Env {
    * Env.set('PORT', 3333)
    * ```
    */
-  set (key, value) {
-    _.set(process.env, key, value)
+  set(key, value) {
+    _.set(process.env, key, value);
   }
 }
 
-module.exports = new Env()
+module.exports = new Env();
