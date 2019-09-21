@@ -7,83 +7,97 @@ export const STATUS_PICKED = 'picked';
 export const STATUS_DELIVERED = 'delivered';
 export const STATUS_RECIEVED = 'recieved';
 export const STATUS_NOTRECIEVED = 'not recieved';
-const skheraSchema = new Schema({
+const skheraSchema = new Schema(
+  {
     description: {
-        type: String,
+      type: String
     },
     deliver: {
-        type: {type: String},
-        duration: Number
+      type: { type: String },
+      duration: Number
     },
     author: { type: Schema.Types.ObjectId, ref: 'User' },
     rider: { type: Schema.Types.ObjectId, ref: 'User' },
     priceitems: {
-        from: Number,
-        to: Number
+      from: Number,
+      to: Number
     },
     isshared: {
-        type: Boolean,
-        default: false
+      type: Boolean,
+      default: false
     },
     price: {
-        type: Number,
-        required: true
+      type: Number,
+      required: true
     },
     schedule: {
-        type: String
+      type: String
     },
     items: [String],
     from: {
-        text: String,
-        coordinates: {
-            type: [Number]
-        }
+      text: String,
+      coordinates: {
+        type: [Number]
+      }
     },
     to: {
-        coordinates: {
-            type: [Number]
-        },
-        text: String
+      coordinates: {
+        type: [Number]
+      },
+      text: String
     },
     status: {
-        type: String,
-        enum: [STATUS_DELIVERED, STATUS_PICKED, STATUS_RECIEVED, STATUS_NOTRECIEVED],
-        default: STATUS_NOTRECIEVED
+      type: String,
+      enum: [STATUS_DELIVERED, STATUS_PICKED, STATUS_RECIEVED, STATUS_NOTRECIEVED],
+      default: STATUS_NOTRECIEVED
     }
-}, {
-        timestamps: true
-})
-
+  },
+  {
+    timestamps: true
+  }
+);
 
 skheraSchema.methods = {
-    view(role) {
-  
-      let view = {};
-      let fields = ['id', 'status', 'items','schedule', 'price', 'deliver', 'description', 'to', 'from', 'author', 'rider'];
-  
-      switch (role) {
-        case 'customer':
-          fields = [...fields];
-          break;
-  
-        case 'coursier':
-          fields = [...fields];
-          break;
-        
-        case 'admin':
-          fields = [...fields, 'createdAt'];
-          break;
-      }
-  
-      fields.forEach((field) => { view[field] = this[field] });
-  
-      return view;
-    }
-}
-skheraSchema.plugin(mongooseKeywords, { paths: ['author', 'rider'] })
+  view(role) {
+    let view = {};
+    let fields = [
+      'id',
+      'status',
+      'items',
+      'schedule',
+      'price',
+      'deliver',
+      'description',
+      'to',
+      'from',
+      'author',
+      'rider'
+    ];
 
+    switch (role) {
+      case 'customer':
+        fields = [...fields];
+        break;
+
+      case 'coursier':
+        fields = [...fields];
+        break;
+
+      case 'admin':
+        fields = [...fields, 'createdAt'];
+        break;
+    }
+
+    fields.forEach(field => {
+      view[field] = this[field];
+    });
+
+    return view;
+  }
+};
+skheraSchema.plugin(mongooseKeywords, { paths: ['author', 'rider'] });
 
 const Skhera = mongoose.model('Skhera', skheraSchema);
 
 export const schema = Skhera.schema;
-export default Skhera
+export default Skhera;

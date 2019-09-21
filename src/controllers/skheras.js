@@ -1,11 +1,13 @@
 'use strict';
-import Skhera, { STATUS_NOTRECIEVED } from '../models/skhera';
+import Skhera, { STATUS_NOTRECIEVED, STATUS_RECIEVED } from '../models/skhera';
 import { getCoursier, getAnotherCoursier, sendSkheraRequest, sendSkheraNotificationConsumer } from '../services/skhera';
 import { notFound, success } from '../services/response';
 
 export const getByUser = async ({ user: { id } }, res) => {
   try {
     const skheras = await Skhera.find({ author: id, status: { $ne: STATUS_NOTRECIEVED } }).populate('rider');
+    console.log(skheras);
+
     notFound(res, skheras);
     success(res, skheras);
   } catch (error) {
@@ -81,6 +83,8 @@ export const accept = async ({ body: { status, idSkhera }, app }, res) => {
       sendSkheraRequest(app, skhera, coursier);
       success(res);
     } else {
+      skhera.status = STATUS_RECIEVED;
+      await skhera.save();
       sendSkheraNotificationConsumer(app, skhera);
       return success(res);
     }
