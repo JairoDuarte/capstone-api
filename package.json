@@ -38,7 +38,7 @@
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
     "jsonwebtoken": "^8.5.0",
-    "mongoose": "^5.4.14",
+    "mongoose": "^5.7.5",
     "mongoose-keywords": "^0.4.0",
     "morgan": "~1.9.0",
     "passport": "^0.4.0",
